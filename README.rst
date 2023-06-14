@@ -15,11 +15,10 @@ Installation & Requirements
 
 Currently, the latest release of SPACER can be installed from source. Follow these steps:
 
-.. code-block::
-        git clone https://github.com/rstofi/spacer.git
-	cd spacer
- 	pip install -r requirements.txt
- 	pip install -e .
+``git clone https://github.com/rstofi/spacer.git
+cd spacer
+pip install -r requirements.txt
+pip install -e .``
 
 ``spacer`` requires a `Postrges <https://www.postgresql.org/>`_ installation.
 
