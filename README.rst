@@ -15,8 +15,8 @@ Installation & Requirements
 
 Currently, the latest release of SPACER can be installed from source. Follow these steps:
 
-
-	git clone https://github.com/rstofi/spacer.git
+.. code-block::
+        git clone https://github.com/rstofi/spacer.git
 	cd spacer
  	pip install -r requirements.txt
  	pip install -e .
