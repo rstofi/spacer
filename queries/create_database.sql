@@ -1,8 +1,8 @@
 /* Script to create the database used by the spacer app */
-CREATE DATABASE IF NOT EXISTS spacer_job_board;
+-- CREATE DATABASE IF NOT EXISTS spacer_job_board;
 
 -- Connect to the database (this is only in an app like psql)
-\c spacer_job_board;
+-- \c spacer_job_board;
 
 -- Create the enumeration types
 CREATE TYPE Work_TypeEnum AS ENUM ('remote', 'hybrid', 'on-site');
