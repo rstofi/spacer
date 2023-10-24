@@ -145,7 +145,7 @@ class SpacerTUI():
     def quit(self) -> int:
         """Method to close the TUI and so spacer
         """
-        self.disp('See ya, spacer!') #A reference to cowboy beboop I guess...
+        self.disp('\nSee you cowgirl,\nsomeday, somewhere.') #A reference to cowboy beboop I guess...
         exit()
 
     def default_key_bindings(self) -> int:
