@@ -9,10 +9,18 @@ from spacer import utils as Sutils
 def main() -> int:
     """
     """
-
-    #print('Welcome to spacer!')
-
     app = Stui.SpacerTUI()
+
+    # Initialize the app
+    app.boot()
+    app.check_configuration()
+
+    # Main loop
+    while True:
+        app.console()
+        app.default_key_bindings()
+
+        exit()
 
     return 0
 

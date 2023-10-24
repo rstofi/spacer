@@ -23,6 +23,20 @@ r"     |_|                        " + '\n\n'
 
     return logo_string
 
+def get_help_message() -> str:
+    """
+    """
+
+    help_string = "\
+============\n\
+Spacer Help:\n\
+------------\n\
+h: display help\n\
+q: quit spacer\n\
+============"
+
+    return help_string
+
 def check_configuration_file() -> str:
     """Checking if the configuration file exists
     """
