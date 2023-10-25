@@ -3,40 +3,12 @@
 
 import os
 from shutil import which
-from configparser import ConfigParser
+import configparser
 
-# ===Import globals
+# === GLOBALS ===
 from spacer.globals import _config_path
 
 # === FUNCTIONS ===
-def get_logo() -> str:
-    """
-    """
-
-    logo_string = r"                                " + '\n' + \
-r"  ___ _ __   __ _  ___ ___ _ __ " + '\n' + \
-r" / __| '_ \ / _` |/ __/ _ \ '__|" + '\n' + \
-r" \__ \ |_) | (_| | (_|  __/ |   " + '\n' + \
-r" |___/ .__/ \__,_|\___\___|_|   " + '\n' + \
-r"     | |                        " + '\n' + \
-r"     |_|                        " + '\n\n'
-
-    return logo_string
-
-def get_help_message() -> str:
-    """
-    """
-
-    help_string = "\
-============\n\
-Spacer Help:\n\
-------------\n\
-h: display help\n\
-q: quit spacer\n\
-============"
-
-    return help_string
-
 def check_configuration_file() -> str:
     """Checking if the configuration file exists
     """
@@ -46,21 +18,19 @@ def check_configuration_file() -> str:
     else:
         return False
 
-def create_config_file(config_params) -> int:
+def create_config_file(config_params:dict) -> int:
     """
     """
 
     if not check_configuration_file():
-        config = ConfigParser()
+        config = configparser.ConfigParser()
 
         config.read(_config_path)
-        config.add_section('main')
-        config.set('main', 'dbname', config_params['dbname'])
-        config.set('main', 'user', config_params['user'])
-        config.set('main', 'host', config_params['host'])
-
-        if config_params['port'] != None:
-            config.set('main', 'port', config_params['port'])
+        config.add_section('connection')
+        config.set('connection', 'dbname', config_params['dbname'])
+        config.set('connection', 'user', config_params['user'])
+        config.set('connection', 'host', config_params['host'])
+        config.set('connection', 'port', str(config_params['port']))
 
         with open(_config_path, 'w') as f:
             config.write(f)
@@ -69,6 +39,20 @@ def create_config_file(config_params) -> int:
         raiseError('Config file already exist!')
 
     return 0
+
+def get_config_dict_from_file() -> dict:
+    """Simple wrapper to get the params from the config file
+    """
+    if check_configuration_file() == False:
+        raise FileNotFoundError("No config file found at: {0:s}".format(_config_path))
+
+    else:
+        config = configparser.ConfigParser(allow_no_value=True)
+        config.read(_config_path)
+
+        config_params_dict = dict(config['connection'])
+
+        return config_params_dict
 
 def check_database_connection() -> bool:
     """Checking if the database is installed, and can be accessed.
