@@ -21,16 +21,32 @@ def connect_to_pstgress_DB(config_params:dict, upasswd:str=None) -> int:
             conn_string += r"{0:s}='{1:s}' ".format(key,val)
 
     # If password is provided by the user
+    # TO DO: remove this bit when password storage from file implemented on top level and this case is handled
     if upasswd != None:
         conn_string += "password='{0:s}'".format(upasswd)
+    else:
+        RaiseValueError('No password provided!')
 
     print(conn_string)
 
-    #Connect to database
+    #Connect to the database
     conn = psycopg2.connect(conn_string)
 
-    print(type(conn))
-    print(conn)
+    cursor = conn.cursor()
+
+    print('AAAAAAAA')
+
+    # Here is the problem: I need to connect every time I call a function...
+    # and so I should do so. Basically this is beacuse I want to make a minimal viable
+    # data product and it seems non-trivial to have a single connection established
+    # with my current TUI class sctructure
+
+    # Need a check connection function (this basically) that generates a connection string
+    # Then each time a function needs
+
+    # NO fuck it look at this: https://stackoverflow.com/questions/74511042/one-connection-to-db-for-app-or-a-connection-on-every-execution
+
+    #conn.close()
 
     return 0
 

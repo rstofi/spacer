@@ -32,4 +32,30 @@ The schema provides a structured foundation for tracking job applications and in
 
 Additionally, a Comments column is added to the JOBS table to provide extra flexibility for capturing additional information as needed.
 
+-----
+Setting up spacer to run.
 
+Create a postgres user:
+
+```
+sudo -i -u postgres
+createuser --interactive #Do the user creation, here {user_name} is defined
+#Enter psql
+psql
+
+# Set password for the user
+ALTER USER {user_name} PASSWORD '{password}';
+
+
+#Create database
+CREATE DATABASE {database_name}  ENCODING 'UTF8' OWNER {user_name};
+
+#List existing databases to check
+\l
+
+#exit psql
+\q
+
+```
+
+Now you can run spacer

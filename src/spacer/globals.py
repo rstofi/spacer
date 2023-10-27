@@ -16,6 +16,9 @@ r"     |_|                        " + '\n\n'
 _default_key_bindings = {'h':'Show help',
                         'q':'Quit spacer'}
 
+# === Console prompt text
+_console_prompt_text = 'spacer:>'
+
 # === Absolute path to the configuration path
 _config_path = os.path.join(os.path.expanduser('~'),'.spacer.ini')
 

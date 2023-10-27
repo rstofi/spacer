@@ -8,7 +8,7 @@ from spacer import quires as squires
 
 # === GLOBALS ===
 from spacer.globals import _spacer_logo, _config_default_params,\
-                            _default_key_bindings
+                            _default_key_bindings, _console_prompt_text
 
 # === FUNCTIONS ===
 
@@ -26,7 +26,6 @@ class SpacerTUI():
         self.ustack:str = '' #This is used to emulate a two-element stack of uinnput
         self.config_params:dict = {}
         self.upasswd:str = None #The user password for the postgress connection
-        self.is_connected:bool = False
 
         #self.status:str = 'boot' #This, i might need in the future
 
@@ -60,7 +59,15 @@ class SpacerTUI():
         if stack_update:
             self.ustack = self.uinput
         
-        self.uinput = input('spacer:> ')
+        self.uinput = input(_console_prompt_text)
+
+        return 0
+
+    def get_passwd(self) -> int:
+        """Similar to the `console` method but more secure for password input
+        """
+        self.disp("Please provide your password:")
+        self.upasswd = getpass.getpass(_console_prompt_text)
 
         return 0
 
@@ -74,6 +81,10 @@ class SpacerTUI():
     def quit(self) -> int:
         """Method to close the TUI and so spacer
         """
+        # Close postgres connection
+        if self.is_connected:
+            conn.close()
+
         self.disp('\nSee you cowgirl,\nsomeday, somewhere.') #A reference to cowboy beboop I guess...
         exit()
 
@@ -204,16 +215,36 @@ class SpacerTUI():
         """
         """
         self.disp('Connecting to database ...')
-        # Get the password for the database
-        self.get_uinput_with_message(message = \
-                    "Please provide your password:",
-                    def_val = None,
-                    disable_yn=True)
 
-        # Store password
-        self.upasswd = self.uinput
+        import sys
 
-        squires.connect_to_pstgress_DB(self.config_params, self.upasswd)
+        wrong_passwd_counter = 3
+        while wrong_passwd_counter != 0:
+            try:
+                # Get the password for the database
+                self.get_passwd()
+                squires.connect_to_pstgress_DB(self.config_params, self.upasswd)
+                break
+            except:
+                self.disp('Unable to connect to the database! (possibly wrong password)')
+
+                wrong_passwd_counter -= 1
+
+        if wrong_passwd_counter == 0:
+            self.disp('Unexpected error occured!')
+            self.dict_disp(disp_header='Possible reasons',
+                        disp_dict = {'1':'Wrong password provided 3 times',
+                                    '2':"Database '{0:s}' does not exist".format(
+                                        self.config_params['dbname']),
+                                    '3':'Unexpected bug'})
+
+            self.disp('Please try again, check your database configuration or raise an error on GitHub!')
+
+            self.quit()
+
+        else:
+            self.disp('Connection to DB established ...')
+            self.is_connected = True
 
         return 0
 
