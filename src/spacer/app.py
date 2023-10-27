@@ -3,15 +3,13 @@
 
 import sys
 
-from spacer import tui as Stui
-from spacer import utils as Sutils
-
+from spacer import tui as stui
 
 def run_spacer_TUI_app() -> int:
     """Main wrapper to run the spacer app in the command line
     """
 
-    app = Stui.SpacerTUI()
+    app = stui.SpacerTUI()
 
     # Initialize the app
     app.boot()

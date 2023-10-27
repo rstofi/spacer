@@ -2,7 +2,9 @@
 """
 
 import sys
-from spacer import utils as Sutils
+import getpass
+from spacer import utils as sutils
+from spacer import quires as squires
 
 # === GLOBALS ===
 from spacer.globals import _spacer_logo, _config_default_params,\
@@ -21,7 +23,10 @@ class SpacerTUI():
 
         # Set default values for parameters
         self.uinput:str = ''
+        self.ustack:str = '' #This is used to emulate a two-element stack of uinnput
         self.config_params:dict = {}
+        self.upasswd:str = None #The user password for the postgress connection
+        self.is_connected:bool = False
 
         #self.status:str = 'boot' #This, i might need in the future
 
@@ -48,11 +53,23 @@ class SpacerTUI():
 
         return 0
 
-    def console(self) -> str:
+    def console(self, stack_update=True) -> int:
         """The TUI 'console' implementation as a class method
         """
+        # First, update the stack (for now limited to a single entry)
+        if stack_update:
+            self.ustack = self.uinput
+        
         self.uinput = input('spacer:> ')
-        return self.uinput
+
+        return 0
+
+    def load_from_stack(self) -> int:
+        """Overwrite uinput with the ustack value
+        """
+        self.uinput = self.ustack
+
+        return 0
 
     def quit(self) -> int:
         """Method to close the TUI and so spacer
@@ -89,28 +106,43 @@ class SpacerTUI():
 
     def yes_no_interface(self) -> bool:
         """Method for handling [Y/n] questions
-        """ 
+        """
+
+        self.console()
         while True:
-            self.console()
             if self.uinput.lower() in ['yes', 'y']:
+                self.load_from_stack()
                 return True
             elif self.uinput.lower() in ['no', 'n']:
+                self.load_from_stack()
                 return False
             elif self.check_for_default_key_bindings():
                 continue
             else:
                 self.disp('Please select [Y/n]')
+                self.console(stack_update=False)
 
-    def get_uinput_with_message(self, message:str, def_val:str=None) -> int:
+    def get_uinput_with_message(self, message:str, def_val:str=None, disable_yn:bool=False) -> int:
         """Simple wrapper to a TUI dialogue that asks for an input
         """
         while True:
-            self.disp(message + " (Press enter for default: {0:s})".format(str(def_val)))
-            self.check_for_default_key_bindings()
-            self.uinput = self.console()
+            if def_val == None:
+                self.disp(message)
+            
+                self.check_for_default_key_bindings()
+                self.console()
 
-            if self.chenck_enter():
-                self.uinput = def_val
+            else:
+                self.disp(message + " (Press enter for default: {0:s})".format(str(def_val)))
+            
+                self.check_for_default_key_bindings()
+                self.console()
+
+                if self.chenck_enter():
+                    self.uinput = def_val
+                    break
+
+            if disable_yn == True:
                 break
             else:
                 self.disp('Are you sure? [Y/n]')
@@ -123,10 +155,10 @@ class SpacerTUI():
         """
         self.disp('Checking configuration ...')
 
-        if Sutils.check_configuration_file() == False:
+        if sutils.check_configuration_file() == False:
             self.start_config_file_creation()
         else:
-            self.config_params.update(Sutils.get_config_dict_from_file())
+            self.config_params.update(sutils.get_config_dict_from_file())
 
             self.dict_disp(disp_header = 'DB connection configuration',
                             disp_dict = self.config_params)
@@ -161,18 +193,36 @@ class SpacerTUI():
             self.dict_disp(disp_header = 'Selected DB setup parameters',
                             disp_dict = config_params_dict)
 
-            Sutils.create_config_file(config_params_dict)
+            sutils.create_config_file(config_params_dict)
 
             return 0
 
         else:
             self.quit()
 
+    def connect_to_DB(self) -> int:
+        """
+        """
+        self.disp('Connecting to database ...')
+        # Get the password for the database
+        self.get_uinput_with_message(message = \
+                    "Please provide your password:",
+                    def_val = None,
+                    disable_yn=True)
+
+        # Store password
+        self.upasswd = self.uinput
+
+        squires.connect_to_pstgress_DB(self.config_params, self.upasswd)
+
+        return 0
+
     def boot(self) -> int:
         """Runs when starting spacer
         """
         self.disp(_spacer_logo)
         self.check_configuration()
+        self.connect_to_DB()
         return 0
 
 # === MAIN ===

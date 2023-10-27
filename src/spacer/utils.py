@@ -54,12 +54,6 @@ def get_config_dict_from_file() -> dict:
 
         return config_params_dict
 
-def check_database_connection() -> bool:
-    """Checking if the database is installed, and can be accessed.
-    """
-
-    return False
-
 # === MAIN ===
 if __name__ == "__main__":
     pass
