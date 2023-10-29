@@ -5,6 +5,7 @@ import sys
 
 from spacer import tui as stui
 
+
 def run_spacer_TUI_app() -> int:
     """Main wrapper to run the spacer app in the command line
     """
@@ -23,13 +24,15 @@ def run_spacer_TUI_app() -> int:
 
     return 0
 
+
 def main() -> int:
     """I can later add options here (i.e. run spacer with arguments without TUI)
     """
     run_spacer_TUI_app()
 
     return 0
-   
+
+
 # === MAIN ===
 if __name__ == "__main__":
     main()
