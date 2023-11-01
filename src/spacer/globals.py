@@ -21,9 +21,10 @@ _console_prompt_text = 'spacer:> '
 
 # === Absolute path to the configuration folder, conncetion config and password files
 _spacer_config_dir = os.path.join(os.path.expanduser('~'), '.spacer')
+_spacer_config_path = os.path.join(_spacer_config_dir, 'config.ini')
 _connection_config_path = os.path.join(_spacer_config_dir, 'db_conncetion.ini')
 
-# === Default configuration file parameters
+# === Default connection_configuration file parameters
 _connection_config_default_params = {'dbname': 'spacer_job_board',
                                      'user': 'postgres',
                                      'password': None,

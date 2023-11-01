@@ -9,29 +9,23 @@ import configparser
 from spacer.globals import _connection_config_path, _spacer_config_dir
 
 # === FUNCTIONS ===
-
-
-def check_configuration_file() -> bool:
+def check_connection_configuration_file(conn_config_path:str=_connection_config_path) -> bool:
     """Checking if the configuration file exists
     """
-
-    # Create the .spacer dir if not existing
-    if os.path.isdir(_spacer_config_dir) == False:
-        os.makedirs(_spacer_config_dir)
-
-    if os.path.isfile(_connection_config_path):
+    if os.path.isfile(conn_config_path):
         return True
     else:
         return False
 
 
-def create_config_file(config_params: dict) -> int:
+def create_connection_config_file(config_params: dict,
+                        conn_config_path:str=_connection_config_path) -> int:
     """
     """
-    if check_configuration_file() == False:
+    if check_connection_configuration_file(conn_config_path) == False:
         config = configparser.ConfigParser()
 
-        config.read(_connection_config_path)
+        config.read(conn_config_path)
         config.add_section('connection')
         config.set('connection', 'dbname', config_params['dbname'])
         config.set('connection', 'user', config_params['user'])
@@ -39,32 +33,32 @@ def create_config_file(config_params: dict) -> int:
         config.set('connection', 'host', config_params['host'])
         config.set('connection', 'port', str(config_params['port']))
 
-        with open(_connection_config_path, 'w') as f:
+        with open(conn_config_path, 'w') as f:
             config.write(f)
 
     return 0
 
 
-def get_config_dict_from_file() -> dict:
+def get_connection_config_dict_from_file(conn_config_path:str=_connection_config_path) -> dict:
     """Simple wrapper to get the params from the config file
     """
-    if check_configuration_file() == False:
+    if check_connection_configuration_file(conn_config_path) == False:
         raise FileNotFoundError("No config file found at: {0:s}".format(
-            _connection_config_path))
+            conn_config_path))
 
     else:
         config = configparser.ConfigParser(allow_no_value=True)
-        config.read(_connection_config_path)
+        config.read(conn_config_path)
 
         config_params_dict = dict(config['connection'])
 
         return config_params_dict
 
 
-def check_password() -> bool:
+def check_password(conn_config_path:str=_connection_config_path) -> bool:
     """
     """
-    config_dict = get_config_dict_from_file()
+    config_dict = get_connection_config_dict_from_file(conn_config_path)
 
     # Check if the password exist
 
@@ -74,22 +68,22 @@ def check_password() -> bool:
         return False
 
 
-def get_upasswd() -> str:
+def get_upasswd(conn_config_path:str=_connection_config_path) -> str:
     """
     """
-    config_dict = get_config_dict_from_file()
+    config_dict = get_connection_config_dict_from_file(conn_config_path)
     return config_dict['password']
 
 
-def set_upasswd(upasswd) -> int:
+def set_upasswd(upasswd, conn_config_path:str=_connection_config_path) -> int:
     """
     """
     config = configparser.ConfigParser()
-    config.read(_connection_config_path)
+    config.read(conn_config_path)
 
     config.set('connection', 'password', upasswd)
 
-    with open(_connection_config_path, "w+") as configfile:
+    with open(conn_config_path, "w+") as configfile:
         config.write(configfile)
 
     return 0

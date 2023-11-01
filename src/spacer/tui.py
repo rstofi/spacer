@@ -4,12 +4,12 @@
 import sys
 import getpass
 from spacer import database_connector as sdbc
+from spacer import utils as sui
 from spacer import quires as sq
 
 # === GLOBALS ===
 from spacer.globals import _spacer_logo, _connection_config_default_params, \
-    _default_key_bindings, _console_prompt_text
-
+    _default_key_bindings, _console_prompt_text, _connection_config_path
 # === FUNCTIONS ===
 
 # === CLASSES ====
@@ -26,6 +26,7 @@ class SpacerTUI():
         # Set default values for parameters
         self.uinput: str = ''
         self.ustack: str = ''  # This is used to emulate a two-element stack of uinnput
+        self.connection_config_path = None
         self.config_params: dict = {}
 
     # === METHODS ===
@@ -166,15 +167,47 @@ class SpacerTUI():
                     break
         return 0
 
+    def configure(self) -> int:
+        """Configure spacer general settings if not existing
+        """
+        config_params = {}
+
+        #This bit of code should run only once when spacer is ran first time
+        if sui.check_configuration_file() == False:
+
+            self.disp('No configuration file have been found!')
+            self.disp('Creating config file ...')
+            
+            self.get_uinput_with_message(
+                message="Please provide the desired location for the connection \
+configuration file:".format(_connection_config_path),
+                def_val=str(_connection_config_path))
+
+            config_params['connection_config_path'] = self.uinput
+
+            self.disp('Creating config file ...')
+
+            sui.create_config_file(config_params)
+
+        else:
+            config_params.update(sui.get_config_dict_from_file())
+
+        self.connection_config_path = config_params['connection_config_path']
+
+        return 0
+
+
     def check_configuration(self) -> int:
         """Checking if configuration file exist and offer creation if not found
         """
         self.disp('Checking configuration ...')
 
-        if sdbc.check_configuration_file() == False:
+        if sdbc.check_connection_configuration_file(
+                conn_config_path=self.connection_config_path) == False:
             self.start_config_file_creation()
         else:
-            self.config_params.update(sdbc.get_config_dict_from_file())
+            self.config_params.update(sdbc.get_connection_config_dict_from_file(
+                                conn_config_path=self.connection_config_path))
 
             self.dict_disp(disp_header='DB connection configuration',
                            disp_dict=self.config_params,
@@ -217,7 +250,8 @@ class SpacerTUI():
             self.dict_disp(disp_header='Selected DB setup parameters',
                            disp_dict=self.config_params)
 
-            sdbc.create_config_file(self.config_params)
+            sdbc.create_connection_config_file(self.config_params,
+                            conn_config_path=self.connection_config_path)
 
             return 0
 
@@ -269,7 +303,8 @@ class SpacerTUI():
                         'Would you like to configure password storage now?')
 
                     if self.yes_no_interface():
-                        sdbc.set_upasswd(self.config_params['password'])
+                        sdbc.set_upasswd(self.config_params['password'],
+                            conn_config_path=self.connection_config_path)
                         self.disp('Your password has been configured.')
 
         self.disp('Connected to database')
@@ -280,6 +315,7 @@ class SpacerTUI():
         """Runs when starting spacer
         """
         self.disp(_spacer_logo)
+        self.configure()
         self.check_configuration()
         self.connect_to_DB()
         return 0
