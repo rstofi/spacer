@@ -4,7 +4,7 @@
 import os
 
 # === The logo
-_spacer_logo = r"                                " + '\n' + \
+SPACER_LOGO = r"                                " + '\n' + \
     r"  ___ _ __   __ _  ___ ___ _ __ " + '\n' + \
     r" / __| '_ \ / _` |/ __/ _ \ '__|" + '\n' + \
     r" \__ \ |_) | (_| | (_|  __/ |   " + '\n' + \
@@ -13,19 +13,23 @@ _spacer_logo = r"                                " + '\n' + \
     r"     |_|                        " + '\n\n'
 
 # === Default key binding dictionary
-_default_key_bindings = {'h': 'Show help',
-                         'q': 'Quit spacer'}
+DEFAULT_KEY_BINDINGS = {
+                        'q': 'Quit spacer',
+                        'h': 'Show help',
+                        'd': 'Show database connection configuration'
+                        }
 
 # === Console prompt text
-_console_prompt_text = 'spacer:> '
+CONSLOLE_PROMPT_TEXT = 'spacer:> '
 
 # === Absolute path to the configuration folder, conncetion config and password files
-_spacer_config_dir = os.path.join(os.path.expanduser('~'), '.spacer')
-_spacer_config_path = os.path.join(_spacer_config_dir, 'config.ini')
-_connection_config_path = os.path.join(_spacer_config_dir, 'db_conncetion.ini')
+SPACER_CONFIG_DIR = os.path.join(os.path.expanduser('~'), '.spacer')
+SPACER_CONFIG_PATH = os.path.join(SPACER_CONFIG_DIR, 'config.ini')
+
 
 # === Default connection_configuration file parameters
-_connection_config_default_params = {'dbname': 'spacer_job_board',
+CONNECTION_CONFIG_PATH = os.path.join(SPACER_CONFIG_DIR, 'db_conncetion.ini')
+CONNECTION_CONFIG_DEFAULT_PARAMS = {'dbname': 'spacer_job_board',
                                      'user': 'postgres',
                                      'password': None,
                                      'host': 'localhost',
