@@ -12,12 +12,12 @@ For now, I keep this quite complex, but I might will try to re-factor it later
 import os
 import sys
 import getpass
-from spacer import utils as sui
+from spacer import utils as su
 from spacer import quires as sq
 
 # === GLOBALS ===
 from spacer.globals import SPACER_LOGO, DEFAULT_KEY_BINDINGS, CONSLOLE_PROMPT_TEXT, \
-                    CONNECTION_CONFIG_PATH, CONNECTION_CONFIG_DEFAULT_PARAMS
+    CONNECTION_CONFIG_PATH, CONNECTION_CONFIG_DEFAULT_PARAMS
 
 # === FUNCTIONS ===
 
@@ -35,47 +35,37 @@ class SpacerApp():
         # Set default values for parameters
         self.uinput: str = ''
         self.ustack: str = ''  # This is used to emulate a two-element stack of uinnput
-        self.verbose: bool = True # If True all messages are displayed
+        self.verbose: bool = True  # If True all messages are displayed
         self.connection_config_path = None
         self.connection_config_params: dict = {}
 
     # === METHODS ===
-    def disp(self, message: str, non_verbose: bool = False) -> int:
+    def disp(self, message: str) -> int:
         """Method for displaying messages.
 
         Parameters:
             - message (str): the message displayed in stdout
-            - non_verbose (bool): if True, self.verbosity is checked 
         """
-
-        # Base case
-        if non_verbose:
-            sys.stdout.write(message + '\n')
-            sys.stdout.flush()
-        elif self.verbose:
-            sys.stdout.write(message + '\n')
-            sys.stdout.flush()
+        sys.stdout.write(message + '\n')
+        sys.stdout.flush()
         return 0
 
     def dict_disp(self,
                   disp_header: str,
                   disp_dict: dict,
-                  skip_val_list: list = [],
-                  non_verbose=False) -> int:
+                  skip_val_list: list = []) -> int:
         """Simple routine to display dict values nicely
-
-        Here the `non_verbose` parameter can be forced to ignore the st instance value
         """
 
-        self.disp('=================', non_verbose)
-        self.disp(disp_header,non_verbose)
-        self.disp('-----------------',non_verbose)
+        self.disp('=================')
+        self.disp(disp_header)
+        self.disp('-----------------')
 
         for key, val in disp_dict.items():
             if key not in skip_val_list:
-                self.disp('{0:s} : {1:s}'.format(str(key), str(val)),non_verbose)
+                self.disp('{0:s} : {1:s}'.format(str(key), str(val)))
 
-        self.disp('=================',non_verbose)
+        self.disp('=================')
 
         return 0
 
@@ -125,8 +115,7 @@ class SpacerApp():
         # Checking for help
         if self.uinput.lower() == 'h':
             self.dict_disp(disp_header='Spacer help:',
-                           disp_dict=DEFAULT_KEY_BINDINGS,
-                           non_verbose=True)
+                           disp_dict=DEFAULT_KEY_BINDINGS)
 
             self.uinput = self.ustack
             is_default_key = True
@@ -135,13 +124,11 @@ class SpacerApp():
         if self.uinput.lower() == 'd':
             self.dict_disp(disp_header='DB connection configuration:',
                            disp_dict=self.connection_config_params,
-                           skip_val_list=sui.connection_config_display_skip(
-                               self.connection_config_params),
-                           non_verbose=True)
+                           skip_val_list=su.connection_config_display_skip(
+                               self.connection_config_params))
 
             self.uinput = self.ustack
             is_default_key = True
-
 
         return is_default_key
 
@@ -175,8 +162,7 @@ class SpacerApp():
             self,
             message: str,
             def_val: str = None,
-            disable_yn: bool = False,
-            non_verbose=False) -> int:
+            disable_yn: bool = False) -> int:
         """Simple wrapper to a TUI dialogue that asks for an input
         """
         while True:
@@ -189,7 +175,7 @@ class SpacerApp():
                 self.disp(
                     message +
                     " (Press enter for default: {0:s})".format(
-                        str(def_val)), non_verbose)
+                        str(def_val)))
                 self.console()
                 self.check_for_default_key_bindings()
 
@@ -200,7 +186,7 @@ class SpacerApp():
             if disable_yn:
                 break
             else:
-                self.disp('Are you sure? [Y/n]', non_verbose)
+                self.disp('Are you sure? [Y/n]')
                 if self.yes_no_interface():
                     break
         return 0
@@ -208,7 +194,7 @@ class SpacerApp():
     def configure(self) -> int:
         """Configure spacer general settings.
 
-        If configuration file is not existing, then this routine generates a 
+        If configuration file is not existing, then this routine generates a
         .spacer/ directory under the user's HOME library and a config.ini file
         with the default configuration settings.
 
@@ -217,12 +203,12 @@ class SpacerApp():
         """
         spacer_config_params = {}
 
-        #This bit of code should run only once when spacer is ran first time
-        if sui.check_spacer_configuration_file() == False:
+        # This bit of code should run only once when spacer is ran first time
+        if su.check_spacer_configuration_file() == False:
 
             self.disp('Found no spacer configuration file!')
-            self.disp('Creating spacer config file ...')
-            
+            self.disp('Creating spacer config file now ...')
+
             # Connection configuration file location
             self.get_uinput_with_message(
                 message="Please provide the desired location for the connection \
@@ -231,52 +217,33 @@ configuration file:".format(CONNECTION_CONFIG_PATH),
 
             spacer_config_params['connection_config_path'] = self.uinput
 
-            # Verbosity
-            self.disp("Set spacer to verbose?")
-            if self.yes_no_interface():
-                spacer_config_params['verbose'] = 'true'
-            else:
-                spacer_config_params['verbose'] = 'false'
+            # I can add more parameters here later, that's why I am using a
+            # dict
 
             # Create config file
             self.disp('Creating config file ...')
 
-            sui.create_config_file(spacer_config_params)
+            su.create_config_file(spacer_config_params)
 
         else:
             # Get spacer general config params from file
-            spacer_config_params.update(sui.get_config_dict_from_file())
+            spacer_config_params.update(su.get_config_dict_from_file())
 
         # General configuration i.e. setting some of the class attributes
         self.connection_config_path = spacer_config_params['connection_config_path']
 
-        # Set verbosity
-        if str(spacer_config_params['verbose']).lower() in ['true', 'True']:
-            self.verbose = True
-        elif str(spacer_config_params['verbose']).lower() in ['false', 'False']:
-            self.verbose = False
-        else:
-            raise ValueError('Invalid verbosity configuration!')
-
         return 0
 
-
     def check_connection_configuration(self) -> int:
-        """Checking if the connection configuration file exist and offer it's 
+        """Checking if the connection configuration file exist and offer it's
         creation if the file is not found.
         """
-        self.disp('Checking configuration ...')
-
         if not os.path.isfile(self.connection_config_path):
             self.start_connection_config_file_creation()
         else:
-            self.connection_config_params.update(sui.get_connection_config_dict_from_file(
-                                conn_config_path=self.connection_config_path))
-
-            self.dict_disp(disp_header='DB connection configuration',
-                           disp_dict=self.connection_config_params,
-                           skip_val_list=sui.connection_config_display_skip(
-                               self.connection_config_params))
+            self.connection_config_params.update(
+                su.get_connection_config_dict_from_file(
+                    conn_config_path=self.connection_config_path))
 
         return 0
 
@@ -289,14 +256,13 @@ configuration file:".format(CONNECTION_CONFIG_PATH),
         for key, val in CONNECTION_CONFIG_DEFAULT_PARAMS.items():
             # Handle password separately
             if key == 'password':
-                self.disp("NOTE: press enter to skip storing your password in the config file!",
-                     non_verbose=True)
+                self.disp(
+                    "NOTE: press enter to skip storing your password in the config file!")
                 self.uinput = self.get_passwd()
             else:
                 self.get_uinput_with_message(
                     message="Please specify '{0:s}'".format(
-                        str(key)), def_val=str(val),
-                     non_verbose=True)
+                        str(key)), def_val=str(val))
 
             config_params_dict[str(key)] = self.uinput
 
@@ -307,21 +273,21 @@ configuration file:".format(CONNECTION_CONFIG_PATH),
     def start_connection_config_file_creation(self) -> int:
         """Top level code to generate a config file
         """
-        self.disp('Found no connection configuration file!',  non_verbose=True)
-        self.disp('Would you like to create the connection config file now?',  non_verbose=True)
+        self.disp('Found no connection configuration file!')
+        self.disp('Would you like to create the connection config file now?')
 
         if self.yes_no_interface():
-            self.disp('Creating config file ...',  non_verbose=True)
+            self.disp('Creating config file ...')
             self.init_connection_config_file()
 
             self.dict_disp(disp_header='Selected DB setup parameters',
                            disp_dict=self.connection_config_params,
-                           skip_val_list=sui.connection_config_display_skip(
-                               self.connection_config_params),
-                            non_verbose=True)
+                           skip_val_list=su.connection_config_display_skip(
+                               self.connection_config_params))
 
-            sui.create_connection_config_file(self.connection_config_params,
-                            conn_config_path=self.connection_config_path)
+            su.create_connection_config_file(
+                self.connection_config_params,
+                conn_config_path=self.connection_config_path)
 
             return 0
 
@@ -331,31 +297,33 @@ configuration file:".format(CONNECTION_CONFIG_PATH),
     def connect_to_DB(self) -> int:
         """
         """
-        self.disp('Connecting to database ...', non_verbose=True)
+        self.disp('Connecting to database ...')
 
         try:
             sq.connect_to_pstgress_DB(self.connection_config_params)
         except BaseException:
-            if not sui.check_password_exists_in_config():
-                self.disp('No password found in connection configuration ...',  non_verbose=True)                
+            if not su.check_password_exists_in_config():
+                self.disp('No password found in connection configuration ...')
             else:
-                self.disp('Invalid configuration or wrong password in connection config file!')
+                self.disp(
+                    'Invalid configuration or wrong password in connection config file!')
 
-            self.disp('Please provide your password:', non_verbose=True)
+            self.disp('Please provide your password:')
             wrong_passwd_counter = 3
             while wrong_passwd_counter != 0:
                 try:
-                    self.connection_config_params['password'] = self.get_passwd()
+                    self.connection_config_params['password'] = self.get_passwd(
+                    )
                     sq.connect_to_pstgress_DB(self.connection_config_params)
                     break
 
                 except BaseException:
-                    self.disp('Invalid password ...',  non_verbose=True)
+                    self.disp('Invalid password ...')
 
                     wrong_passwd_counter -= 1
 
             if wrong_passwd_counter == 0:
-                self.disp('Unexpected error occurred!',  non_verbose=True)
+                self.disp('Unexpected error occurred!')
                 self.dict_disp(
                     disp_header='Possible reasons',
                     disp_dict={
@@ -363,24 +331,22 @@ configuration file:".format(CONNECTION_CONFIG_PATH),
                         '2': 'Wrong password stored in connection config file',
                         '3': "Database '{0:s}' does not exist".format(
                             self.connection_config_params['dbname']),
-                        '4': 'Unexpected bug'},
-                         non_verbose=True)
+                        '4': 'Unexpected bug'})
 
                 self.disp(
                     'Please try again, check your database configuration \
-or raise an error on GitHub!',  non_verbose=True)
+or raise an error on GitHub!')
 
                 self.quit()
 
-        self.disp("Connected to database",
-                non_verbose=True)
+        self.disp("Connected to database")
 
         return 0
 
     def boot(self) -> int:
         """Runs when starting spacer
         """
-        self.disp(SPACER_LOGO, non_verbose=True)
+        self.disp(SPACER_LOGO)
         self.configure()
         self.check_connection_configuration()
         self.connect_to_DB()

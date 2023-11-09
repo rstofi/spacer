@@ -20,7 +20,7 @@ def run_spacer() -> int:
         app.console()
         app.check_for_default_key_bindings()
 
-        #exit()
+        # exit()
 
     return 0
 

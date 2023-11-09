@@ -4,10 +4,11 @@
 import os
 import configparser
 
-from spacer.globals import  SPACER_CONFIG_DIR, SPACER_CONFIG_PATH, \
-                        CONNECTION_CONFIG_PATH
+from spacer.globals import SPACER_CONFIG_DIR, SPACER_CONFIG_PATH, \
+    CONNECTION_CONFIG_PATH
 
 # === FUNCTIONS ===
+
 
 def check_spacer_configuration_file() -> bool:
     """Checking if the configuration file exists
@@ -20,7 +21,7 @@ def check_spacer_configuration_file() -> bool:
     return os.path.isfile(SPACER_CONFIG_PATH)
 
 
-def create_config_file(config_params:dict) -> int:
+def create_config_file(config_params: dict) -> int:
     """
     """
     if check_spacer_configuration_file() == False:
@@ -29,14 +30,13 @@ def create_config_file(config_params:dict) -> int:
         config.read(SPACER_CONFIG_PATH)
         config.add_section('spacer')
         config.set('spacer', 'connection_config_path',
-                config_params['connection_config_path'])
-        config.set('spacer', 'verbose',
-                config_params['verbose'])
+                   config_params['connection_config_path'])
 
         with open(SPACER_CONFIG_PATH, 'w') as f:
             config.write(f)
 
     return 0
+
 
 def get_config_dict_from_file() -> dict:
     """Simple wrapper to get the params from the config file
@@ -53,8 +53,10 @@ def get_config_dict_from_file() -> dict:
 
         return config_params_dict
 
-def create_connection_config_file(config_params: dict,
-                        conn_config_path:str=CONNECTION_CONFIG_PATH) -> int:
+
+def create_connection_config_file(
+        config_params: dict,
+        conn_config_path: str = CONNECTION_CONFIG_PATH) -> int:
     """
     """
     if not os.path.isfile(conn_config_path):
@@ -74,7 +76,8 @@ def create_connection_config_file(config_params: dict,
     return 0
 
 
-def get_connection_config_dict_from_file(conn_config_path:str=CONNECTION_CONFIG_PATH) -> dict:
+def get_connection_config_dict_from_file(
+        conn_config_path: str = CONNECTION_CONFIG_PATH) -> dict:
     """Simple wrapper to get the params from the config file
     """
     if not os.path.isfile(conn_config_path):
@@ -90,7 +93,8 @@ def get_connection_config_dict_from_file(conn_config_path:str=CONNECTION_CONFIG_
         return config_params_dict
 
 
-def check_password_exists_in_config(conn_config_path:str=CONNECTION_CONFIG_PATH) -> bool:
+def check_password_exists_in_config(
+        conn_config_path: str = CONNECTION_CONFIG_PATH) -> bool:
     """
     """
     config_dict = get_connection_config_dict_from_file(conn_config_path)
@@ -99,14 +103,16 @@ def check_password_exists_in_config(conn_config_path:str=CONNECTION_CONFIG_PATH)
     return config_dict['password'] != str(None)
 
 
-def get_upasswd(conn_config_path:str=CONNECTION_CONFIG_PATH) -> str:
+def get_upasswd(conn_config_path: str = CONNECTION_CONFIG_PATH) -> str:
     """
     """
     config_dict = get_connection_config_dict_from_file(conn_config_path)
     return config_dict['password']
 
 
-def set_upasswd(upasswd, conn_config_path:str=CONNECTION_CONFIG_PATH) -> int:
+def set_upasswd(
+        upasswd,
+        conn_config_path: str = CONNECTION_CONFIG_PATH) -> int:
     """
     """
     config = configparser.ConfigParser()
@@ -133,7 +139,6 @@ def connection_config_display_skip(config_params: dict) -> list:
             display_skip_list.append(key)
 
     return display_skip_list
-
 
 
 # === MAIN ===
