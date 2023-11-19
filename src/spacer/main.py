@@ -6,7 +6,7 @@ import sys
 from spacer.app import SpacerApp
 
 
-def run_spacer() -> int:
+def run_spacer() -> None:
     """Main wrapper to run the spacer app
     """
 
@@ -22,15 +22,11 @@ def run_spacer() -> int:
 
         # exit()
 
-    return 0
 
-
-def main() -> int:
+def main() -> None:
     """I can later add options here (i.e. run spacer with arguments without TUI)
     """
     run_spacer()
-
-    return 0
 
 
 # === MAIN ===

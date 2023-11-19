@@ -6,7 +6,7 @@ import psycopg2
 # === FUNCTIONS ===
 
 
-def connect_to_pstgress_DB(config_params: dict) -> int:
+def connect_to_pstgress_DB(config_params: dict) -> None:
     """
     """
 
@@ -38,7 +38,7 @@ def connect_to_pstgress_DB(config_params: dict) -> int:
     # NO fuck it look at this:
     # https://stackoverflow.com/questions/74511042/one-connection-to-db-for-app-or-a-connection-on-every-execution
 
-    # conn.close()
+    conn.close()
 
     # === PLAN
     # I will need a test connection that is being called from TUI
@@ -46,8 +46,6 @@ def connect_to_pstgress_DB(config_params: dict) -> int:
     # This I can create at the app.py level via generating a connection string from the TUI app or something....
     # Then I can have TUI functions with the database class provided as an
     # argument
-
-    return 0
 
 
 # === MAIN ===

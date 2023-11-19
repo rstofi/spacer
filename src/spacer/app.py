@@ -40,7 +40,7 @@ class SpacerApp():
         self.connection_config_params: dict = {}
 
     # === METHODS ===
-    def disp(self, message: str) -> int:
+    def disp(self, message: str) -> None:
         """Method for displaying messages.
 
         Parameters:
@@ -48,12 +48,11 @@ class SpacerApp():
         """
         sys.stdout.write(message + '\n')
         sys.stdout.flush()
-        return 0
 
     def dict_disp(self,
                   disp_header: str,
                   disp_dict: dict,
-                  skip_val_list: list = []) -> int:
+                  skip_val_list: list = []) -> None:
         """Simple routine to display dict values nicely
         """
 
@@ -67,9 +66,7 @@ class SpacerApp():
 
         self.disp('=================')
 
-        return 0
-
-    def console(self, stack_update=True) -> int:
+    def console(self, stack_update=True) -> None:
         """The TUI 'console' implementation as a class method
         """
         # First, update the stack (for now limited to a single entry)
@@ -78,22 +75,18 @@ class SpacerApp():
 
         self.uinput = input(CONSLOLE_PROMPT_TEXT)
 
-        return 0
-
-    def get_passwd(self) -> str:
+    def get_passwd(self) -> None:
         """Similar to the `console` method but more secure for password input
         """
         self.disp("Please provide your password:")
         return getpass.getpass(CONSLOLE_PROMPT_TEXT)
 
-    def load_from_stack(self) -> int:
+    def load_from_stack(self) -> None:
         """Overwrite uinput with the ustack value
         """
         self.uinput = self.ustack
 
-        return 0
-
-    def quit(self) -> int:
+    def quit(self) -> None:
         """Method to close the TUI and so spacer
         """
         self.disp(
@@ -135,10 +128,7 @@ class SpacerApp():
     def chenck_enter(self) -> bool:
         """Checking if the user input is an enter
         """
-        if self.uinput == '':
-            return True
-        else:
-            return False
+        return self.uinput == ''
 
     def yes_no_interface(self) -> bool:
         """Method for handling [Y/n] questions
@@ -162,7 +152,7 @@ class SpacerApp():
             self,
             message: str,
             def_val: str = None,
-            disable_yn: bool = False) -> int:
+            disable_yn: bool = False) -> None:
         """Simple wrapper to a TUI dialogue that asks for an input
         """
         while True:
@@ -189,9 +179,8 @@ class SpacerApp():
                 self.disp('Are you sure? [Y/n]')
                 if self.yes_no_interface():
                     break
-        return 0
 
-    def configure(self) -> int:
+    def configure(self) -> None:
         """Configure spacer general settings.
 
         If configuration file is not existing, then this routine generates a
@@ -232,9 +221,7 @@ configuration file:".format(CONNECTION_CONFIG_PATH),
         # General configuration i.e. setting some of the class attributes
         self.connection_config_path = spacer_config_params['connection_config_path']
 
-        return 0
-
-    def check_connection_configuration(self) -> int:
+    def check_connection_configuration(self) -> None:
         """Checking if the connection configuration file exist and offer it's
         creation if the file is not found.
         """
@@ -245,9 +232,7 @@ configuration file:".format(CONNECTION_CONFIG_PATH),
                 su.get_connection_config_dict_from_file(
                     conn_config_path=self.connection_config_path))
 
-        return 0
-
-    def init_connection_config_file(self) -> int:
+    def init_connection_config_file(self) -> None:
         """Code gathering the user config file parameters from the user
         """
 
@@ -268,9 +253,7 @@ configuration file:".format(CONNECTION_CONFIG_PATH),
 
         self.connection_config_params.update(config_params_dict)
 
-        return 0
-
-    def start_connection_config_file_creation(self) -> int:
+    def start_connection_config_file_creation(self) -> None:
         """Top level code to generate a config file
         """
         self.disp('Found no connection configuration file!')
@@ -289,12 +272,10 @@ configuration file:".format(CONNECTION_CONFIG_PATH),
                 self.connection_config_params,
                 conn_config_path=self.connection_config_path)
 
-            return 0
-
         else:
             self.quit()
 
-    def connect_to_DB(self) -> int:
+    def connect_to_DB(self) -> None:
         """
         """
         self.disp('Connecting to database ...')
@@ -341,16 +322,13 @@ or raise an error on GitHub!')
 
         self.disp("Connected to database")
 
-        return 0
-
-    def boot(self) -> int:
+    def boot(self) -> None:
         """Runs when starting spacer
         """
         self.disp(SPACER_LOGO)
         self.configure()
         self.check_connection_configuration()
         self.connect_to_DB()
-        return 0
 
 
 # === MAIN ===

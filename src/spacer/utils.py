@@ -21,7 +21,7 @@ def check_spacer_configuration_file() -> bool:
     return os.path.isfile(SPACER_CONFIG_PATH)
 
 
-def create_config_file(config_params: dict) -> int:
+def create_config_file(config_params: dict) -> None:
     """
     """
     if check_spacer_configuration_file() == False:
@@ -34,8 +34,6 @@ def create_config_file(config_params: dict) -> int:
 
         with open(SPACER_CONFIG_PATH, 'w') as f:
             config.write(f)
-
-    return 0
 
 
 def get_config_dict_from_file() -> dict:
@@ -56,7 +54,7 @@ def get_config_dict_from_file() -> dict:
 
 def create_connection_config_file(
         config_params: dict,
-        conn_config_path: str = CONNECTION_CONFIG_PATH) -> int:
+        conn_config_path: str = CONNECTION_CONFIG_PATH) -> None:
     """
     """
     if not os.path.isfile(conn_config_path):
@@ -72,8 +70,6 @@ def create_connection_config_file(
 
         with open(conn_config_path, 'w') as f:
             config.write(f)
-
-    return 0
 
 
 def get_connection_config_dict_from_file(
@@ -112,7 +108,7 @@ def get_upasswd(conn_config_path: str = CONNECTION_CONFIG_PATH) -> str:
 
 def set_upasswd(
         upasswd,
-        conn_config_path: str = CONNECTION_CONFIG_PATH) -> int:
+        conn_config_path: str = CONNECTION_CONFIG_PATH) -> None:
     """
     """
     config = configparser.ConfigParser()
@@ -122,8 +118,6 @@ def set_upasswd(
 
     with open(conn_config_path, "w+") as configfile:
         config.write(configfile)
-
-    return 0
 
 
 def connection_config_display_skip(config_params: dict) -> list:
