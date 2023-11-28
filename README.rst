@@ -20,7 +20,7 @@ cd spacer
 pip install -r requirements.txt
 pip install -e .``
 
-``spacer`` requires a `Postrges <https://www.postgresql.org/>`_ installation.
+``spacer`` requires a `SQLite <https://www.sqlite.org/index.html>`_ installation.
 
 Usage and Contribution
 ----------------------
