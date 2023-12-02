@@ -3,7 +3,15 @@
 
 import os
 
-# === The logo
+# === Paths
+# Get the absolute path to the project's root directory
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
+
+# === DB settings
+DEAFAULT_DB_NAME = 'spacer.db'
+DEAFAULT_DB_PATH = os.path.join(PROJECT_ROOT,'data/{0:s}'.fomrat(DEAFAULT_DB_NAME))
+
+# === TUI settings
 SPACER_LOGO = r"                                " + '\n' + \
     r"  ___ _ __   __ _  ___ ___ _ __ " + '\n' + \
     r" / __| '_ \ / _` |/ __/ _ \ '__|" + '\n' + \
@@ -12,28 +20,16 @@ SPACER_LOGO = r"                                " + '\n' + \
     r"     | |                        " + '\n' + \
     r"     |_|                        " + '\n\n'
 
+CONSLOLE_PROMPT_TEXT = 'spacer:> '
+
+EXIT_MESSAGE = '\nSee you cowgirl,\nsomeday, somewhere.'
+
 # === Default key binding dictionary
 DEFAULT_KEY_BINDINGS = {
     'q': 'Quit spacer',
     'h': 'Show help',
-    'd': 'Show database connection configuration'
+    'r': 'Run sql script'
 }
-
-# === Console prompt text
-CONSLOLE_PROMPT_TEXT = 'spacer:> '
-
-# === Absolute path to the configuration folder, conncetion config and password files
-SPACER_CONFIG_DIR = os.path.join(os.path.expanduser('~'), '.spacer')
-SPACER_CONFIG_PATH = os.path.join(SPACER_CONFIG_DIR, 'config.ini')
-
-
-# === Default connection_configuration file parameters
-CONNECTION_CONFIG_PATH = os.path.join(SPACER_CONFIG_DIR, 'db_conncetion.ini')
-CONNECTION_CONFIG_DEFAULT_PARAMS = {'dbname': 'spacer_job_board',
-                                    'user': 'postgres',
-                                    'password': None,
-                                    'host': 'localhost',
-                                    'port': None}
 
 # === MAIN ===
 if __name__ == "__main__":

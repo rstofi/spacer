@@ -3,7 +3,7 @@
 
 import sys
 
-from spacer.app import SpacerApp
+from spacer.tui_engine import SpacerApp
 
 
 def run_spacer() -> None:
