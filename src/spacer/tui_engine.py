@@ -13,8 +13,10 @@ import os
 import sys
 import getpass
 
+from spacer.database import create_empty_db
+
 # === GLOBALS ===
-from spacer.globals import SPACER_LOGO, DEFAULT_KEY_BINDINGS, \
+from spacer.globals import SPACER_LOGO, DEFAULT_KEY_BINDINGS, DEFAULT_SCHEMA_PATH, \
             CONSLOLE_PROMPT_TEXT, EXIT_MESSAGE, PROJECT_ROOT, DEAFAULT_DB_PATH
 
 
@@ -178,21 +180,20 @@ class SpacerApp():
                 self.db_path = database_path
             else:
                 raise ValueError('Database not found: {0:s}'.format(database_path))
+                # Here I can add a call for creating the database
 
         # Else, use the default settings
         else:
             # Check if database dir and database exists and if not create it
             if not os.path.isfile(DEAFAULT_DB_PATH):
                 # Create database
-                
-                
-            # Else set database path
-            else:
-                self.db_path = DEAFAULT_DB_PATH
+                self.disp('Creating default database ...')
+                create_empty_db(DEAFAULT_DB_PATH, DEFAULT_SCHEMA_PATH)
+
+            # Set database path
+            self.db_path = DEAFAULT_DB_PATH
 
         self.disp("Using database: {0:s}".format(self.db_path))
-
-
 
     def boot(self, database_path:str = None) -> None:
         """Runs when starting spacer
