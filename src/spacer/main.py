@@ -22,6 +22,8 @@ def run_spacer() -> None:
 
         # exit()
 
+    # TO DO: need to handle ctrlD exit and close the DB connection 
+
 
 def main() -> None:
     """I can later add options here (i.e. run spacer with arguments without TUI)

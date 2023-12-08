@@ -13,6 +13,7 @@ sys.path.append(PROJECT_ROOT)
 class DatabaseHandler:
     """
     """
+    # === METHODS ===
     def __init__(self, db_path):
         """
         """
@@ -20,13 +21,24 @@ class DatabaseHandler:
         self.db_connection = None # sqlite3.Connection object
         self.cursor = None # squlite.Cursor object
 
-
+    # === General DB handling
     def create_memory_db_connection(self) -> None:
         """
         Creates an in-memory SQLite database connection.
         """
         try:
             self.db_connection = sqlite3.connect(':memory:')
+        except Exception as e:
+            print(e)
+
+        # Generate a cursor
+        self.cursor = self.db_connection.cursor()
+
+    def create_db_connection(self) -> None:
+        """
+        """
+        try:
+            self.db_connection = sqlite3.connect(self.db_path)
         except Exception as e:
             print(e)
 
@@ -54,13 +66,45 @@ class DatabaseHandler:
 
         self.cursor.executescript(sql_script)
 
+    # === Check database methods
+    def check_if_company_exists(self, company_name:str) -> bool:
+        """
+        """
+        self.cursor.execute('SELECT name FROM companies WHERE name = ?',
+                            (company_name,))
+
+        # self.cursor.fetchone() None or tuple of the company names
+            
+        if self.cursor.fetchone() == None:
+            return False
+        else:
+            return True
+
+    # === Insert to database methods
+    def add_company(self, company_row_dict:dict) -> None:
+        """
+        """
+
+        if self.check_if_company_exists(company_row_dict['name']) == False:
+            # Insert data into companies table
+            self.cursor.execute('''
+                INSERT INTO companies(name, is_recruitment_agency, website, comments)
+                VALUES (?, ?, ?, ?)
+                ''',
+                (company_row_dict['name'], 
+                company_row_dict['is_recruitment_agency'],
+                company_row_dict['website'],
+                company_row_dict['comments']))
+
+            # Commit changes to DB
+            self.db_connection.commit()
 
 # === Functions
 def create_empty_db(db_path, schema_path) -> None:
     """Create an empty database if not existing
     """
     if os.path.isfile(db_path):
-        return ValueError('Database already exist: {0:s}'.fomrat(db_path))
+        return ValueError('Database already exist: {0:s}'.format(db_path))
 
     # Create empty database and parent directories if needed
     if not os.path.exists(os.path.abspath(os.path.dirname(db_path))):

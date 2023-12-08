@@ -27,7 +27,8 @@ INSERT INTO Application_StatusEnum (value)
         ('applied'), 
         ('interviews in progress'), 
         ('offer made'), 
-        ('rejected'), 
+        ('rejected'),
+        ('discarded'), 
         ('accepted');
 
 CREATE TABLE Interview_TypeEnum (
@@ -75,7 +76,7 @@ INSERT INTO ExperienceLevelEnum (value)
 -- Create the companies table
 CREATE TABLE companies (
     id INTEGER PRIMARY KEY,
-    name TEXT,
+    name TEXT, -- Should be also unique (I can change this in the future)
     is_recruitment_agency BOOLEAN,
     website TEXT,
     comments TEXT
