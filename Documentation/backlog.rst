@@ -10,4 +10,4 @@ List of things I need to do:
 	- check schema code compatiblity with SQLite
 	- re-design README to match with my working examples
 	- move this file to Documentation
-	
+	- use the `keyboard` module to build a command stack and to detect input by user

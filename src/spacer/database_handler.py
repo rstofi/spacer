@@ -4,7 +4,10 @@
 import os
 import sys
 import sqlite3
+import pandas as pd
+import markdown
 from spacer.globals import PROJECT_ROOT, DEAFAULT_DB_PATH
+from spacer.formatting import md_par
 
 # Append the project root to sys.path
 sys.path.append(PROJECT_ROOT)
@@ -66,6 +69,32 @@ class DatabaseHandler:
 
         self.cursor.executescript(sql_script)
 
+    def query_result_to_pandas_df(self) -> pd.DataFrame:
+        """
+        Convert the query result to pandas DataFrame
+        """
+
+        query_results_df = pd.DataFrame(self.cursor.fetchall())
+
+        query_results_df.columns = [description[0] for description in self.cursor.description]
+
+        return query_results_df
+
+    def query_result_to_md(self) -> str:
+        """
+        Convert the query result to pandas DataFrame
+        Then convert this to markdown format (str)
+        """
+
+        query_results_df = self.query_result_to_pandas_df()
+
+        # Create formatted output string
+        query_result_string = md_par()
+        query_result_string += query_results_df.to_markdown(index=False)
+        query_result_string += md_par()
+
+        return query_result_string
+
     # === Check database methods
     def check_if_company_exists(self, company_name:str) -> bool:
         """
@@ -79,6 +108,40 @@ class DatabaseHandler:
             return False
         else:
             return True
+
+    def fetch_company_row(self, company_name:str) -> str:
+        """
+        """
+        if self.check_if_company_exists(company_name):
+            self.cursor.execute('''
+                SELECT *
+                FROM companies
+                WHERE name = ?
+                ''',
+                [company_name])
+
+            return self.query_result_to_md()
+
+        else:
+            raise ValueError("Company '{0:s}' not found in database!".format(company_name))
+
+    def fetch_company_id(self, company_name:str) -> int:
+        """
+        """
+        if self.check_if_company_exists(company_name):
+            self.cursor.execute('''
+                SELECT id
+                FROM companies
+                WHERE name = ?
+                ''',
+                [company_name])
+        else:
+            raise ValueError("Company '{0:s}' not found in database!".format(company_name))
+
+        company_row = self.query_result_to_pandas_df() 
+
+        # .iloc[n] select the nth value from the column
+        return int(company_row['id'].iloc[0])
 
     # === Insert to database methods
     def add_company(self, company_row_dict:dict) -> None:

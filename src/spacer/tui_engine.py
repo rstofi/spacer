@@ -7,6 +7,8 @@ and methods.
 
 For now, I keep this quite complex, but I might will try to re-factor it later
 
+
+NOTE: dates are added in UTC time-format, but it doesn't really matter
 """
 
 import os
@@ -72,6 +74,11 @@ class SpacerApp():
 
     def console(self, stack_update=True) -> None:
         """The TUI 'console' implementation as a class method
+
+        TO DO: 
+            - I can switch input to some more complex logic using the
+            `keyboard` module later on (e.g. to build a queue for the commands pressed)
+        
         """
         # First, update the stack (for now limited to a single entry)
         if stack_update:
@@ -104,7 +111,7 @@ class SpacerApp():
             elif self.check_for_default_key_bindings():
                 continue
             else:
-                self.disp('Please select [Y/n]')
+                self.disp('Please select [y/n]')
                 self.console(stack_update=False)
 
     def get_bool_input_with_message(
@@ -253,13 +260,13 @@ class SpacerApp():
         """
         # Check if the input dict only has a name
         if list(new_company_dict.keys()) != ['name']:
-            print(new_company_dict)
-            print(new_company_dict.keys())
             raise ValueError("Invalid company dict provided!")
 
         # Is recruiter agency
         new_company_dict['is_recruitment_agency'] = self.get_bool_input_with_message(
             message = 'Is the company a recruitment agency? [y/n]')
+
+        # TO DO: validate website
 
         # Company website
         self.get_uinput_with_message( message = 'Company website:')
@@ -270,6 +277,38 @@ class SpacerApp():
         new_company_dict['comments'] = self.uinput
 
         return new_company_dict
+
+    def get_new_job_dict(self, new_job_dict:dict) -> dict:
+        """
+        """
+        # Check if the input dict has a company id
+        if list(new_job_dict.keys()) != ['company_id']:
+            raise ValueError("No company id provided!")
+
+
+        # Job title
+        self.get_uinput_with_message( message = 'Job title:')
+        new_job_dict['job_title'] = self.uinput
+
+        # Date added (see sqlite documentation: https://www.sqlite.org/lang_datefunc.html)
+        self.get_uinput_with_message( message = 'Date added [YYYY-MM-DD]:')
+        new_job_dict['date'] = self.uinput
+
+        # location
+        self.get_uinput_with_message( message = 'Job location [country]:')
+        new_job_dict['location'] = self.uinput
+
+        # TO DO: validate url
+
+        # url
+        self.get_uinput_with_message( message = 'Job ad url:')
+        new_job_dict['url'] = self.uinput
+
+        # Work type
+
+        # I AM AT THIS POINT
+
+        return new_job_dict
 
     def start_new_job_application(self) -> None:
         """
@@ -289,11 +328,27 @@ class SpacerApp():
 
             self.dict_disp(disp_header="New company to add:", disp_dict=new_company_dict)
 
-            if self.get_bool_input_with_message(message="Are you sure to add this company?"):
+            if self.get_bool_input_with_message(message="Are you sure to add this company? [y/n]"):
                 self.db_handler.add_company(new_company_dict)
         else:
-            self.disp("Company '{0:s}' already exists in database ...".format(
+            self.disp("Company '{0:s}' already exists in database as:".format(
                 new_company_dict['name']))
+
+            self.disp(self.db_handler.fetch_company_row(new_company_dict['name']))
+
+        # TO DO: List all jobs and their status (need to add job status view) to inform the user
+
+        # Get the company ID
+        company_id = self.db_handler.fetch_company_id(new_company_dict['name'])
+
+        # Add new job to the database
+        new_job_dict = self.get_new_job_dict({'company_id': company_id})
+
+        # Need to check if the job already exists (if yes then log it's status)
+
+        # Else add it to the db
+
+
 
     # === MAIN event loop engine
     def check_for_default_key_bindings(self) -> bool:
