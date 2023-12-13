@@ -266,12 +266,12 @@ class SpacerApp():
         new_company_dict['is_recruitment_agency'] = self.get_bool_input_with_message(
             message = 'Is the company a recruitment agency? [y/n]')
 
-        # TO DO: validate website
-
         # Company website
         self.get_uinput_with_message( message = 'Company website:')
         new_company_dict['website'] = self.uinput
-        
+
+        # TO DO: validate website
+
         # Company website
         self.get_uinput_with_message( message = 'Comments on company:')
         new_company_dict['comments'] = self.uinput
@@ -285,7 +285,6 @@ class SpacerApp():
         if list(new_job_dict.keys()) != ['company_id']:
             raise ValueError("No company id provided!")
 
-
         # Job title
         self.get_uinput_with_message( message = 'Job title:')
         new_job_dict['job_title'] = self.uinput
@@ -294,15 +293,19 @@ class SpacerApp():
         self.get_uinput_with_message( message = 'Date added [YYYY-MM-DD]:')
         new_job_dict['date'] = self.uinput
 
+        # TO DO: - check if the format of the date is valid
+
         # location
-        self.get_uinput_with_message( message = 'Job location [country]:')
+        self.get_uinput_with_message( message = 'Job location [country or city]:')
         new_job_dict['location'] = self.uinput
 
-        # TO DO: validate url
+        # I don't check for location validity for now...
 
         # url
         self.get_uinput_with_message( message = 'Job ad url:')
         new_job_dict['url'] = self.uinput
+
+        # TO DO: validate url
 
         # Work type
 
