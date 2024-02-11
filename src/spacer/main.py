@@ -21,10 +21,11 @@ def run_spacer() -> None:
             app.console()
             app.check_for_default_key_bindings()
         except Exception as e:
-            app.disp("An unexpected error occurred")
+            app.disp("An unexpected error occurred:")
             print(e)
             app.disp("Exiting spacer ...")
             app.quit()
+
 
 def main() -> None:
     """I can later add options here (i.e. run spacer with arguments without TUI)
