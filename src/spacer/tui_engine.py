@@ -69,7 +69,7 @@ class SpacerApp():
 
         for key, val in disp_dict.items():
             if key not in skip_val_list:
-                self.disp('{0:s} : {1:s}'.format(str(key), str(val)))
+                self.disp(f'{str(key)} : {str(val)}')
 
         self.disp('=================')
 
@@ -139,8 +139,7 @@ class SpacerApp():
             else:
                 self.disp(
                     message +
-                    " (Press enter for default: {0:s})".format(
-                        str(def_val)))
+                    f" (Press enter for default: {str(def_val)})")
                 self.console()
                 self.check_for_default_key_bindings()
 
@@ -168,8 +167,7 @@ class SpacerApp():
             if os.path.isfile(db_path):
                 self.db_path = database_path
             else:
-                raise ValueError(
-                    'Database not found: {0:s}'.format(database_path))
+                raise ValueError(f'Database not found: {database_path}')
                 # Here I can add a call for creating the database
 
         # Else, use the default settings
@@ -183,7 +181,7 @@ class SpacerApp():
             # Set database path
             self.db_path = DEAFAULT_DB_PATH
 
-        self.disp("Using database: {0:s}".format(self.db_path))
+        self.disp(f"Using database: {self.db_path}")
 
     def connect_to_db(self) -> None:
         """
@@ -247,7 +245,7 @@ class SpacerApp():
 
         # Open the sql file
         if not os.path.isfile(self.uinput):
-            self.disp('File not found: {0:s}'.format(self.uinput))
+            self.disp(f'File not found: {self.uinput}')
         else:
             self.db_handler.query_manager.execute_sql_file(self.uinput)
 
@@ -270,53 +268,79 @@ class SpacerApp():
         self.get_uinput_with_message(message='Company website:')
         new_company_dict['website'] = self.uinput
 
-        # TO DO: validate website
+        if not soft_url_validation(new_company_dict['website']):
+            self.disp(f"Given string does not seem to be an url: {new_company_dict['website']}")
 
-        # Company website
+            new_company_dict['website'] = get_uinput_with_message(message='Company website',
+                                            default = new_company_dict['website'],
+                                            enable_yn=True)
+
+        # Comments
         self.get_uinput_with_message(message='Comments on company:')
         new_company_dict['comments'] = self.uinput
 
         return new_company_dict
 
-    def get_new_job_dict(self, new_job_dict: dict) -> dict:
+    def get_new_new_job_application_dict(self, new_job_application_dict: dict) -> dict:
         """
         """
         # Check if the input dict has a company id
-        if list(new_job_dict.keys()) != ['company_id']:
+        if list(new_job_application_dict.keys()) != ['company_id']:
             raise ValueError("No company id provided!")
 
-        # Job title
-        self.get_uinput_with_message(message='Job title:')
-        new_job_dict['job_title'] = self.uinput
+        if list(new_job_application_dict.keys()) != ['job_title']:
+            raise ValueError("No job title provided!")
 
         # Date added (see sqlite documentation:
         # https://www.sqlite.org/lang_datefunc.html)
         self.get_uinput_with_message(message='Date added [YYYY-MM-DD]:')
-        new_job_dict['date'] = self.uinput
+        new_job_application_dict['date'] = self.uinput
 
         # TO DO: - check if the format of the date is valid
 
         # location
         self.get_uinput_with_message(message='Job location [country or city]:')
-        new_job_dict['location'] = self.uinput
+        new_job_application_dict['location'] = self.uinput
 
         # I don't check for location validity for now...
 
         # url
         self.get_uinput_with_message(message='Job ad url:')
-        new_job_dict['url'] = self.uinput
+        new_job_application_dict['url'] = self.uinput
 
-        # TO DO: validate url
+        # Check if url is a valid url
+        if not soft_url_validation(new_job_application_dict['url']):
+            self.disp(f"Given string does not seem to be an url: {new_job_application_dict['url']}")
+
+            new_job_application_dict['url'] = get_uinput_with_message(message='Job ad url:',
+                                    default = new_job_application_dict['url'],
+                                    enable_yn=True)
+
+        # TO DO: check if I need to enforce the schema below!
 
         # Work type
+        self.get_uinput_with_message(message='Work type:')
+        new_job_application_dict['work_type'] = self.uinput
 
-        # I AM AT THIS POINT
+        # Experience_level
+        self.get_uinput_with_message(message='Experience level:')
+        new_job_application_dict['experience_level'] = self.uinput
 
-        return new_job_dict
+        # Description
+        self.get_uinput_with_message(message='Job description:')
+        new_job_application_dict['job_description'] = self.uinput
+
+        # Comments
+        self.get_uinput_with_message(message='Comments on company:')
+        new_job_application_dict['comments'] = self.uinput
+
+        return new_job_application_dict
 
     def start_new_job_application(self) -> None:
         """
         """
+
+        # === Company details
 
         # Add a new company first
         new_company_dict = {}
@@ -339,8 +363,7 @@ class SpacerApp():
                     message="Are you sure to add this company? [y/n]"):
                 self.db_handler.query_manager.add_company(new_company_dict)
         else:
-            self.disp("Company '{0:s}' already exists in database as:".format(
-                new_company_dict['name']))
+            self.disp(f"Company '{new_company_dict['name']}' already exists in database as:")
 
             self.disp(
                 self.db_handler.query_manager.fetch_company_row(
@@ -351,14 +374,40 @@ class SpacerApp():
 
         # Get the company ID
         company_id = self.db_handler.query_manager.fetch_company_id(
-            new_company_dict['name'])
+            new_company_dict['name'])        
 
-        # Add new job to the database
-        new_job_dict = self.get_new_job_dict({'company_id': company_id})
+        # === Job details
+
+        # Init with the company added
+        new_job_application_dict = {'company_id': company_id}
+
+        # Job title
+        self.get_uinput_with_message(message='Job title:')
+        new_job_application_dict['job_title'] = self.uinput
 
         # Need to check if the job already exists (if yes then log it's status)
+        if self.db_handler.query_manager.check_if_job_exists(
+                new_job_application_dict['job_title'],
+                new_job_application_dict['company_id']) == False:
+
+            # HERE I have an error
+
+            # Add new job to the database
+            new_job_application_dict = self.get_new_new_job_application_dict(new_job_application_dict)
+
+            self.dict_disp(
+                disp_header="New job to add:",
+                disp_dict=new_job_application_dict)
+
+            if self.get_bool_input_with_message(
+                    message="Are you sure to add this job listing? [y/n]"):
+                self.db_handler.query_manager.add_job_application(new_job_application_dict)
+
+        else:
+            self.disp(f"Company '{new_job_application_dict['name']}' already exists in database as:")
 
         # Else add it to the db
+
 
     # === MAIN event loop engine
 

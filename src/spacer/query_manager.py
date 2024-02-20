@@ -104,8 +104,7 @@ class QueryManager:
             return self.query_result_to_md()
 
         else:
-            raise ValueError(
-                "Company '{0:s}' not found in database!".format(company_name))
+            raise ValueError(f"Company '{company_name}' not found in database!")
 
     def fetch_company_id(self, company_name: str) -> int:
         """
@@ -117,8 +116,7 @@ class QueryManager:
             self.cursor.execute(self.query,
                                 [company_name])
         else:
-            raise ValueError(
-                "Company '{0:s}' not found in database!".format(company_name))
+            raise ValueError(f"Company '{company_name}' not found in database!")
 
         company_row = self.query_result_to_pandas_df()
 
@@ -139,6 +137,48 @@ class QueryManager:
                                  company_row_dict['is_recruitment_agency'],
                                  company_row_dict['website'],
                                  company_row_dict['comments']))
+
+            # Commit changes to DB
+            db_connection = self.get_db_connection()
+            db_connection.commit()
+
+    # === Jobs queries
+    def check_if_job_exists(self, job_title:str, company_id:int) -> bool:
+        """ Soft check if a job is already exists with the same name at the same
+        company in the db.
+        """
+        self.query = extract_query(self.find_spacer_sql_file('jobs'),
+                                   'check_if_job_exists')
+
+        self.cursor.execute(self.query, (job_title, str(company_id)))
+
+        # self.cursor.fetchone() None or tuple of the company names
+
+        if self.cursor.fetchone() is None:
+            return False
+        else:
+            return True
+
+
+    def add_job_application(self, job_application_row_dict: dict) -> None:
+        """
+        """
+        if self.check_if_job_exists(job_application_row_dict['job_title'],
+                                    job_application_row_dict['company_id']) == False:
+            # Insert data into companies table
+            self.query = extract_query(self.find_spacer_sql_file('jobs'),
+                                       'add_job_application')
+
+            self.cursor.execute(self.query,
+                                (job_application_row_dict['job_title'],
+                                 job_application_row_dict['company_id'],
+                                 job_application_row_dict['date'],
+                                 job_application_row_dict['location'],
+                                 job_application_row_dict['url'],
+                                 job_application_row_dict['work_type'],
+                                 job_application_row_dict['experience_level'],
+                                 job_application_row_dict['description'],
+                                 job_application_row_dict['comments']))
 
             # Commit changes to DB
             db_connection = self.get_db_connection()

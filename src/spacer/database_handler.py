@@ -75,7 +75,7 @@ def create_empty_db(db_path, schema_path) -> None:
     """Create an empty database if not existing
     """
     if os.path.isfile(db_path):
-        return ValueError('Database already exist: {0:s}'.format(db_path))
+        return ValueError(f'Database already exist: {db_path}')
 
     # Create empty database and parent directories if needed
     if not os.path.exists(os.path.abspath(os.path.dirname(db_path))):

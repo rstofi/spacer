@@ -12,12 +12,10 @@ PROJECT_ROOT = os.path.abspath(
 
 # === DB settings
 DEAFAULT_DB_NAME = 'spacer.db'
-DEAFAULT_DB_PATH = os.path.join(PROJECT_ROOT,
-                                'data/{0:s}'.format(DEAFAULT_DB_NAME))
+DEAFAULT_DB_PATH = os.path.join(PROJECT_ROOT, f'data/{DEAFAULT_DB_NAME}')
 
 DEFAULT_SCHEMA_NAME = 'schema.sql'
-DEFAULT_SCHEMA_PATH = os.path.join(
-    PROJECT_ROOT, 'sql/{0:s}'.format(DEFAULT_SCHEMA_NAME))
+DEFAULT_SCHEMA_PATH = os.path.join(PROJECT_ROOT, f'sql/{DEFAULT_SCHEMA_NAME}')
 
 # === TUI settings
 SPACER_LOGO = r"                                " + '\n' + \

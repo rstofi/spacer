@@ -4,6 +4,7 @@ strings passed to the TUI engine.
 
 import os
 import markdown
+from urllib.parse import urlparse
 
 # === FUNCTIONS
 
@@ -23,7 +24,7 @@ def md_par() -> str():
 def md_inline_image(fig_path: str) -> str:
     """
     """
-    return "![Image]({0:s})".format(fig_path) + md_linebreak()
+    return f"![Image]({fig_path})" + md_linebreak()
 
 
 def save_report(report: str, md_report_file: str) -> None:
@@ -42,6 +43,20 @@ def save_report(report: str, md_report_file: str) -> None:
             extensions=['markdown.extensions.tables']))
     report_file.close()
 
+def soft_url_validation(url_string:str) -> bool:
+    """Validate if a string is url. Or at least generally formatted as
+
+    For more info, see:
+        https://stackoverflow.com/questions/7160737/how-to-validate-a-url-in-python-malformed-or-not
+        https://docs.python.org/3/library/urllib.parse.html
+        https://docs.python.org/3/library/urllib.parse.html#url-parsing-security
+
+    """
+    try:
+        result = urlparse(url_string)
+        return all([result.scheme, result.netloc])        
+    except:
+        return False
 
 # === MAIN ===
 if __name__ == '__main__':
