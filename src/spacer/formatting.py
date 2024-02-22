@@ -51,10 +51,12 @@ def soft_url_validation(url_string:str) -> bool:
         https://docs.python.org/3/library/urllib.parse.html
         https://docs.python.org/3/library/urllib.parse.html#url-parsing-security
 
+    NOTE: for the streings we need the `hhtps//:` scheme
+
     """
     try:
         result = urlparse(url_string)
-        return all([result.scheme, result.netloc])        
+        return all([result.scheme, result.netloc])
     except:
         return False
 

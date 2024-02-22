@@ -54,6 +54,9 @@ class DatabaseHandler:
         except Exception as e:
             print(e)
 
+        # Switch on schema enforcement
+        self.db_connection.execute("PRAGMA foreign_keys = ON")
+
         # Generate a cursor
         self.cursor = self.db_connection.cursor()
         self.query_manager = QueryManager(

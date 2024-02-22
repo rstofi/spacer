@@ -16,6 +16,7 @@ import sys
 import getpass
 
 from spacer.database_handler import DatabaseHandler, create_empty_db
+from spacer.formatting import soft_url_validation
 
 # === GLOBALS ===
 from spacer.globals import SPACER_LOGO, DEFAULT_KEY_BINDINGS, DEFAULT_SCHEMA_PATH, \
@@ -271,8 +272,8 @@ class SpacerApp():
         if not soft_url_validation(new_company_dict['website']):
             self.disp(f"Given string does not seem to be an url: {new_company_dict['website']}")
 
-            new_company_dict['website'] = get_uinput_with_message(message='Company website',
-                                            default = new_company_dict['website'],
+            new_company_dict['website'] = self.get_uinput_with_message(message='Company website',
+                                            def_val = new_company_dict['website'],
                                             enable_yn=True)
 
         # Comments
@@ -284,11 +285,14 @@ class SpacerApp():
     def get_new_new_job_application_dict(self, new_job_application_dict: dict) -> dict:
         """
         """
+
+        print(new_job_application_dict)
+
         # Check if the input dict has a company id
-        if list(new_job_application_dict.keys()) != ['company_id']:
+        if 'company_id' not in new_job_application_dict.keys():
             raise ValueError("No company id provided!")
 
-        if list(new_job_application_dict.keys()) != ['job_title']:
+        if 'job_title' not in new_job_application_dict.keys():
             raise ValueError("No job title provided!")
 
         # Date added (see sqlite documentation:
@@ -312,11 +316,9 @@ class SpacerApp():
         if not soft_url_validation(new_job_application_dict['url']):
             self.disp(f"Given string does not seem to be an url: {new_job_application_dict['url']}")
 
-            new_job_application_dict['url'] = get_uinput_with_message(message='Job ad url:',
-                                    default = new_job_application_dict['url'],
+            new_job_application_dict['url'] = self.get_uinput_with_message(message='Job ad url:',
+                                    def_val = new_job_application_dict['url'],
                                     enable_yn=True)
-
-        # TO DO: check if I need to enforce the schema below!
 
         # Work type
         self.get_uinput_with_message(message='Work type:')
@@ -328,7 +330,7 @@ class SpacerApp():
 
         # Description
         self.get_uinput_with_message(message='Job description:')
-        new_job_application_dict['job_description'] = self.uinput
+        new_job_application_dict['description'] = self.uinput
 
         # Comments
         self.get_uinput_with_message(message='Comments on company:')
@@ -390,8 +392,6 @@ class SpacerApp():
                 new_job_application_dict['job_title'],
                 new_job_application_dict['company_id']) == False:
 
-            # HERE I have an error
-
             # Add new job to the database
             new_job_application_dict = self.get_new_new_job_application_dict(new_job_application_dict)
 
@@ -404,7 +404,7 @@ class SpacerApp():
                 self.db_handler.query_manager.add_job_application(new_job_application_dict)
 
         else:
-            self.disp(f"Company '{new_job_application_dict['name']}' already exists in database as:")
+            self.disp(f"Company '{new_job_application_dict['job_title']}' already exists in database as:")
 
         # Else add it to the db
 

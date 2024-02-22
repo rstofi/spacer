@@ -21,8 +21,10 @@ def run_spacer() -> None:
             app.console()
             app.check_for_default_key_bindings()
         except Exception as e:
+            e_type, e_value, e_traceback = sys.exc_info()
             app.disp("An unexpected error occurred:")
-            print(e)
+            #print(e_type, e_value, e_traceback)
+            print(f'{e_type} : {e_value}')
             app.disp("Exiting spacer ...")
             app.quit()
 
