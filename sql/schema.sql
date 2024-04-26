@@ -38,7 +38,8 @@ CREATE TABLE Interview_TypeEnum (
 
 INSERT INTO Interview_TypeEnum (value) 
     VALUES 
-        ('HR'), 
+        ('HR'),
+        ('screening'), 
         ('technical'), 
         ('cultural'), 
         ('homework'), 
@@ -103,6 +104,8 @@ CREATE TABLE applications(
     id INTEGER PRIMARY KEY,
     job_id INTEGER,
     date TEXT, -- SQLite does not have a native TIMESTAMP type
+    end_date TEXT, -- Date when I discard the job or when I am rejected
+    -- I didn't wanted to do a slowly changing dimension thing...
     cover_letter TEXT,
     status INTEGER REFERENCES Application_StatusEnum(id),
     comments TEXT,
