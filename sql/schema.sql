@@ -53,7 +53,7 @@ CREATE TABLE Interview_FormatEnum (
 INSERT INTO Interview_FormatEnum (value) 
     VALUES 
         ('phone'), 
-        ('zoom'), 
+        ('online'), 
         ('in-person'), 
         ('other');
 
