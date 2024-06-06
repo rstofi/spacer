@@ -28,7 +28,9 @@ INSERT INTO Application_StatusEnum (value)
         ('interviews in progress'), 
         ('offer made'), 
         ('rejected'),
-        ('discarded'), 
+        ('declined'), -- Declined an offer
+        ('discarded'),
+        ('opted-out'), -- Opted out during the interview phase
         ('accepted');
 
 CREATE TABLE Interview_TypeEnum (
