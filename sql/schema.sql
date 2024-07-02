@@ -66,13 +66,13 @@ CREATE TABLE ExperienceLevelEnum (
 
 INSERT INTO ExperienceLevelEnum (value) 
     VALUES 
-        ('Internship'), 
-        ('Junior'), 
-        ('Medior'), 
-        ('Senior'), 
-        ('Associate'), 
-        ('Executive'), 
-        ('Other');
+        ('internship'), 
+        ('junior'), 
+        ('medior'), 
+        ('senior'), 
+        ('associate'), 
+        ('executive'), 
+        ('other');
 
 /* The MAIN Tables */
 

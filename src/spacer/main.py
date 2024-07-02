@@ -3,7 +3,7 @@
 
 import sys
 
-from spacer.tui_engine import SpacerApp
+from spacer.tui_engine import SpacerApp, _MDotException
 
 
 def run_spacer() -> None:
@@ -22,6 +22,12 @@ def run_spacer() -> None:
             app.check_for_default_key_bindings()
         except Exception as e:
             e_type, e_value, e_traceback = sys.exc_info()
+
+            # --- handle breaking out from sub-routines
+            if isinstance(e, Exception) == isinstance(_MDotException(), _MDotException):                
+                continue
+
+            # --- handle unexpected errors
             app.disp("An unexpected error occurred:")
             #print(e_type, e_value, e_traceback)
             print(f'{e_type} : {e_value}')

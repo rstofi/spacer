@@ -7,7 +7,6 @@ and methods.
 
 For now, I keep this quite complex, but I might will try to re-factor it later
 
-
 NOTE: dates are added in UTC time-format, but it doesn't really matter
 """
 
@@ -31,6 +30,10 @@ sys.path.append(PROJECT_ROOT)
 
 
 # === CLASSES ====
+class _MDotException(Exception):
+    """Unique exception used exclusively for breaking out from sub-routines
+    """
+    pass
 
 class SpacerApp():
     """The Text-based User Interface of spacer
@@ -47,7 +50,7 @@ class SpacerApp():
         self.db_path = None
         self.db_handler = None  # spacer.database_handler: DatabaseHandler
 
-    # === Core TUI methods
+    # --- Core TUI methods
     def disp(self, message: str) -> None:
         """Method for displaying messages.
 
@@ -155,7 +158,7 @@ class SpacerApp():
             else:
                 break
 
-    # === Config and boot methods
+    # --- Config and boot methods
 
     def configure(self, database_path: str = None) -> None:
         """Configure spacer database and the Database Handler.
@@ -214,10 +217,10 @@ class SpacerApp():
         self.load_views()
 
         # Show hint for usage by default
-        self.disp("For help/manual press 'h'")
+        self.disp("For help/manual press '.h'")
         self.disp("")
 
-    # === Core event loop methods
+    # --- Core event loop methods
 
     def quit(self) -> None:
         """Method to disconnect db, close the TUI and so spacer
@@ -272,9 +275,15 @@ class SpacerApp():
         if not soft_url_validation(new_company_dict['website']):
             self.disp(f"Given string does not seem to be an url: {new_company_dict['website']}")
 
+            # !!! I am debugging here now!
+
+            print(new_company_dict['website'])
+
             new_company_dict['website'] = self.get_uinput_with_message(message='Company website',
                                             def_val = new_company_dict['website'],
                                             enable_yn=True)
+
+            print(new_company_dict['website'])
 
         # Comments
         self.get_uinput_with_message(message='Comments on company:')
@@ -342,7 +351,7 @@ class SpacerApp():
         """
         """
 
-        # === Company details
+        # --- Company details
 
         # Add a new company first
         new_company_dict = {}
@@ -378,7 +387,7 @@ class SpacerApp():
         company_id = self.db_handler.query_manager.fetch_company_id(
             new_company_dict['name'])        
 
-        # === Job details
+        # --- Job details
 
         # Init with the company added
         new_job_application_dict = {'company_id': company_id}
@@ -409,39 +418,47 @@ class SpacerApp():
         # Else add it to the db
 
 
-    # === MAIN event loop engine
+    # ---MAIN event loop engine
 
     def check_for_default_key_bindings(self) -> bool:
         """THIS is basically te main function, the core of the event loop
 
         Defining some default key bindings that can be used at any time.
         These are defined in the `globals` module and currently are:
-            - q or Q: exiting the app
-            - h or H: displaying help message
-            - s or S: Start new job application (and add it to the database)
-            - i or I: Add new interview
-            - u or U: Update application status
-            - r or R: Run SQL file (all commands from the file)
+            - .q: exiting the app
+            - .h: displaying help message
+            - .m: return to menu
+            - .s: Start new job application (and add it to the database)
+            - .i: Add new interview
+            - .u: Update application status
+            - .r: Run SQL file (all commands from the file)
         """
 
         is_default_key = True
 
         # Checking for exit
-        if self.uinput.lower() == 'q':
+        if self.uinput == '.q':
             self.quit()
 
         # Checking for help
-        elif self.uinput.lower() == 'h':
+        elif self.uinput == '.h':
             self.show_help()
 
+        # Checking for menu
+        elif self.uinput == '.m':
+            self.uinput = ''
+            self.ustack = ''
+            raise _MDotException('.m')
+
         # Checking for running sql file
-        elif self.uinput.lower() == 'r':
+        elif self.uinput == '.r':
             self.run_sql_script()
 
         # Checking for new application status
-        elif self.uinput.lower() == 's':
+        elif self.uinput.lower() == '.s':
             self.start_new_job_application()
 
+        # No default key detected
         else:
             is_default_key = False
 

@@ -32,12 +32,13 @@ EXIT_MESSAGE = '\nSee you cowgirl,\nsomeday, somewhere.'
 
 # === Default key binding dictionary
 DEFAULT_KEY_BINDINGS = {
-    'q': 'Quit spacer',
-    'h': 'Show help/manual',
-    's': 'Start new job application (and add it to the database)',
-    'i': 'Add new interview',
-    'u': 'Update application status',
-    'r': 'Run sql script (all commands from file)'
+    '.q': 'Quit spacer',
+    '.h': 'Show help/manual',
+    '.m': 'Return to menu',
+    '.s': 'Start new job application (and add it to the database)',
+    '.i': 'Add new interview',
+    '.u': 'Update application status',
+    '.r': 'Run sql script (all commands from file)'
 }
 
 # === MAIN ===
