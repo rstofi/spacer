@@ -1,5 +1,8 @@
 # SPACER - SimPle job AppliCation trackER
 
+[!IMPORTANT]
+I **abandoned this project**. Maybe only for a while, maybe forever. I have been busy and the window of opportunity to write this code closed. Now, I have other things in my mind. Was a good learning experience, and I want to finis it, but I also **need to learn, when to abandon a project**. I guess, this is part of the learning proces...
+
 `spacer` is a lightweight command-line tool to track your job applications, helping you stay organized and analyze your statistics.
 
 ## Features
